@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>three.js webgl - geometry - text</title>
+		<title>Dev Lunch - Intro to Three.js - Steve Lewis</title>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 		<style>
@@ -40,19 +40,12 @@ var VIEW_ANGLE = 45,
   NEAR = 0.1,
   FAR = 10000;
 
-// get the DOM element to attach to
-// - assume we've got jQuery to hand
-var $container = $('#container');
-
 // create a WebGL renderer, camera
 // and a scene
 var renderer = new THREE.WebGLRenderer({antialias:true});
-var camera =
-  new THREE.PerspectiveCamera(
-    VIEW_ANGLE,
-    ASPECT,
-    NEAR,
-    FAR);
+$('#container').append(renderer.domElement);
+
+var camera = new THREE.PerspectiveCamera(VIEW_ANGLE, ASPECT, NEAR, FAR);
 
 var scene = new THREE.Scene();
 
@@ -63,7 +56,11 @@ scene.add(camera);
 renderer.setSize(WIDTH, HEIGHT);
 
 // attach the render-supplied DOM element
-$container.append(renderer.domElement);
+var texture = THREE.ImageUtils.loadTexture('epiphany-e-white.png')
+
+var material = new THREE.MeshLambertMaterial( { map: texture  } );
+
+var epiphanyCube = new THREE.Mesh(new THREE.CubeGeometry(50, 50, 50), material);
 
 var texture = THREE.ImageUtils.loadTexture('epiphany-e-white-512.png');
 texture.wrapS = THREE.RepeatWrapping;
@@ -72,23 +69,10 @@ texture.repeat.set( 10, 10 );
 
 var material2 = new THREE.MeshLambertMaterial( { map: texture} );
 
-
-var material = new THREE.MeshLambertMaterial( { map: THREE.ImageUtils.loadTexture('epiphany-e-white.png') } );
-
-  // var material = new THREE.MeshLambertMaterial(
-  //   {
-  //     color: 0xCC0000
-  //   });
-
-var box = new THREE.Mesh(new THREE.CubeGeometry(50, 50, 50), material);
-
 var disk = new THREE.Mesh(new THREE.CircleGeometry( 150, 300 ), material2);
 
-
-     disk.overdraw = true;
-
 // add the sphere to the scene
-scene.add(box);
+scene.add(epiphanyCube);
 scene.add(disk);
 
 disk.rotation.z = - Math.PI;
@@ -99,44 +83,39 @@ disk.position.z;
 disk.position.x;
 disk.position.y = -60;
 
-//box.position.y = 30;
+// //create a point light
+var pointLight = new THREE.PointLight(0xFFFFFF);
 
-//create a point light
-// var pointLight =
-//   new THREE.PointLight(0xFFFFFF);
-// // set its position
-// pointLight.position.x = 90;
-// pointLight.position.y = 100;
-// pointLight.position.z = -430;
-
-// // add to the scene
-// scene.add(pointLight);
+// set its position
+pointLight.position.set(60,70,-50);
+scene.add(pointLight);
 
 
-      var ambientLight = new THREE.AmbientLight(0x777777);
-      scene.add(ambientLight);
-      
-      // directional lighting
-      var directionalLight = new THREE.DirectionalLight(0xffffff);
-      directionalLight.position.set(1, 1, 1).normalize();
-      scene.add(directionalLight);
+// var ambientLight = new THREE.AmbientLight(0x777777);
+//  scene.add(ambientLight);
 
-
+// directional lighting
+var directionalLight = new THREE.DirectionalLight(0xffffff);
+directionalLight.position.set(2, 1, 1).normalize();
+scene.add(directionalLight);
 
 camera.position.set(90,90,-170);
 camera.up = new THREE.Vector3(0,1,0);
 camera.lookAt(new THREE.Vector3(0,0,0));
 
-setInterval(function() {
+var render = function () {
 
-  renderer.render(scene, camera);
+	requestAnimationFrame( render );
 
-}, 100);
+	disk.rotation.z += 0.01;
+	epiphanyCube.rotation.z += 0.02;
 
+	renderer.render(scene, camera);
+};
 
-	</script>
+render();
 
-
+</script>
 
 	</body>
 </html>
